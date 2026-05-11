@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽签分组</title>
+<style>
+:root {
+  --primary: #4A7BF7;
+  --primary-light: #EEF2FF;
+  --primary-dark: #3A5FD9;
+  --bg: #F5F6FA;
+  --card: #FFFFFF;
+  --text: #1E2432;
+  --text-secondary: #6B7280;
+  --border: #E5E7EB;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+header {
+  text-align: center;
+  padding: 32px 0 24px;
+}
+
+header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+textarea {
+  width: 100%;
+  height: 160px;
+  padding: 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+  outline: none;
+  line-height: 1.7;
+}
+
+textarea:focus {
+  border-color: var(--primary);
+}
+
+textarea::placeholder {
+  color: #B0B7C3;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  margin-top: 16px;
+}
+
+.input-group {
+  flex: 1;
+}
+
+.input-group label {
+  margin-bottom: 8px;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+  border-color: var(--primary);
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+button {
+  flex: 1;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+.btn-secondary {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.btn-secondary:hover {
+  background: #DDE4FF;
+}
+
+.btn-reset {
+  background: #F3F4F6;
+  color: var(--text-secondary);
+}
+
+.btn-reset:hover {
+  background: #E5E7EB;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.error-msg {
+  color: #E24B4A;
+  font-size: 13px;
+  margin-top: 8px;
+  display: none;
+}
+
+.error-msg.show {
+  display: block;
+}
+
+.result-area {
+  display: none;
+}
+
+.result-area.show {
+  display: block;
+}
+
+.result-title {
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.group-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.group-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.group-header {
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.group-body {
+  padding: 12px 16px;
+}
+
+.member {
+  font-size: 14px;
+  padding: 4px 0;
+  color: var(--text);
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.member:last-child {
+  border-bottom: none;
+}
+
+.member-num {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 500;
+  margin-right: 6px;
+  color: #fff;
+}
+
+.group-colors {
+  --c0: #4A7BF7;
+  --c1: #10B981;
+  --c2: #F59E0B;
+  --c3: #EF4444;
+  --c4: #8B5CF6;
+  --c5: #EC4899;
+  --c6: #06B6D4;
+  --c7: #F97316;
+  --c8: #6366F1;
+  --c9: #14B8A6;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .container { padding: 16px 12px 40px; }
+  header h1 { font-size: 24px; }
+  .card { padding: 16px; }
+  .row { flex-direction: column; }
+  .btn-group { flex-direction: column; }
+  .group-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>抽签分组</h1>
+    <p>输入名单，随机分成若干组</p>
+  </header>
+
+  <div class="card">
+    <label for="names">参与人员</label>
+    <textarea id="names" placeholder="每行输入一个人名，例如：&#10;张三&#10;李四&#10;王五&#10;赵六"></textarea>
+    <div class="row">
+      <div class="input-group">
+        <label for="groupCount">分组数量</label>
+        <input type="number" id="groupCount" min="2" value="2" placeholder="请输入组数">
+      </div>
+    </div>
+    <div class="hint" id="nameCount">已输入 0 人</div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="drawLots()">开始抽签</button>
+      <button class="btn-secondary" onclick="redraw()" id="redrawBtn" style="display:none">重新抽签</button>
+      <button class="btn-reset" onclick="resetAll()">清空</button>
+    </div>
+  </div>
+
+  <div class="result-area" id="resultArea">
+    <div class="card" style="padding:20px 24px">
+      <div class="result-title" id="resultTitle">分组结果</div>
+      <div class="group-grid group-colors" id="groupGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const namesInput = document.getElementById('names');
+const groupCountInput = document.getElementById('groupCount');
+const nameCountEl = document.getElementById('nameCount');
+const errorMsg = document.getElementById('errorMsg');
+const resultArea = document.getElementById('resultArea');
+const groupGrid = document.getElementById('groupGrid');
+const resultTitle = document.getElementById('resultTitle');
+const redrawBtn = document.getElementById('redrawBtn');
+
+namesInput.addEventListener('input', updateCount);
+
+function updateCount() {
+  const names = getNames();
+  nameCountEl.textContent = '已输入 ' + names.length + ' 人';
+}
+
+function getNames() {
+  return namesInput.value.trim().split('\n').map(n => n.trim()).filter(n => n.length > 0);
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.add('show');
+  setTimeout(() => errorMsg.classList.remove('show'), 3000);
+}
+
+function fisherYatesShuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function drawLots() {
+  const names = getNames();
+  const groupCount = parseInt(groupCountInput.value);
+
+  if (names.length === 0) {
+    showError('请输入参与人员名单');
+    return;
+  }
+  if (isNaN(groupCount) || groupCount < 2) {
+    showError('分组数量至少为 2');
+    return;
+  }
+  if (names.length < groupCount) {
+    showError('人数（' + names.length + '人）不能少于组数（' + groupCount + '组）');
+    return;
+  }
+
+  const shuffled = fisherYatesShuffle(names);
+  const groups = Array.from({ length: groupCount }, () => []);
+
+  shuffled.forEach((name, i) => {
+    groups[i % groupCount].push(name);
+  });
+
+  renderResult(groups, groupCount);
+  redrawBtn.style.display = 'block';
+}
+
+function redraw() {
+  drawLots();
+}
+
+function renderResult(groups, groupCount) {
+  resultTitle.textContent = groupCount + ' 组分组结果（共 ' + groups.reduce((s, g) => s + g.length, 0) + ' 人）';
+  groupGrid.innerHTML = '';
+
+  groups.forEach((group, i) => {
+    const colorIdx = i % 10;
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    card.style.animationDelay = (i * 0.06) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.style.background = 'var(--c' + colorIdx + ')';
+    header.textContent = '第 ' + (i + 1) + ' 组（' + group.length + ' 人）';
+
+    const body = document.createElement('div');
+    body.className = 'group-body';
+
+    group.forEach((name, j) => {
+      const member = document.createElement('div');
+      member.className = 'member';
+
+      const num = document.createElement('span');
+      num.className = 'member-num';
+      num.style.background = 'var(--c' + colorIdx + ')';
+      num.textContent = j + 1;
+
+      member.appendChild(num);
+      member.appendChild(document.createTextNode(name));
+      body.appendChild(member);
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    groupGrid.appendChild(card);
+  });
+
+  resultArea.classList.add('show');
+  resultArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetAll() {
+  namesInput.value = '';
+  groupCountInput.value = 2;
+  resultArea.classList.remove('show');
+  redrawBtn.style.display = 'none';
+  updateCount();
+}
+</script>
+</body>
+</html>

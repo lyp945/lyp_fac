@@ -892,6 +892,104 @@ footer a {
   font-size: 14px;
 }
 
+/* 分享结果视图 */
+.share-view {
+  display: none;
+}
+
+.share-view.show {
+  display: block;
+}
+
+.share-banner {
+  text-align: center;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, rgba(74,123,247,0.08) 0%, rgba(168,85,247,0.08) 100%);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.share-banner strong {
+  color: var(--primary);
+}
+
+.share-open-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: var(--gradient);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+
+.share-open-btn:hover {
+  opacity: 0.9;
+}
+
+.share-link-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+}
+
+.share-link-btn:hover {
+  box-shadow: 0 6px 24px rgba(16,185,129,0.4);
+  transform: translateY(-1px);
+}
+
+/* 分享结果页完整视图 */
+.share-full-view {
+  min-height: 100vh;
+  padding: 24px 16px;
+}
+
+.share-full-view .container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.share-result-header {
+  text-align: center;
+  padding: 40px 0 24px;
+}
+
+.share-result-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  background: var(--gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.share-result-header p {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.share-meta {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.share-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 @media (max-width: 480px) {
   .container { padding: 16px 12px 40px; }
   header { padding: 28px 0 24px; }
@@ -932,7 +1030,25 @@ footer a {
   </div>
 </div>
 
-<div class="container">
+<!-- 分享结果视图（独立页面） -->
+<div class="share-full-view" id="shareFullView" style="display:none">
+  <div class="container">
+    <div class="share-result-header">
+      <div class="header-icon" style="width:64px;height:64px;border-radius:16px;margin:0 auto 14px;background:var(--gradient);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(74,123,247,0.3)">
+        <svg viewBox="0 0 24 24" style="width:32px;height:32px;fill:white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+      </div>
+      <h1>抽签分组结果</h1>
+      <p>以下为随机分组结果，公平公正</p>
+      <div class="share-meta" id="shareMeta"></div>
+    </div>
+    <div class="group-grid group-colors" id="shareGroupGrid"></div>
+    <div class="share-banner" style="margin-top:20px">
+      由<strong>抽签分组工具</strong>随机生成 · <a href="javascript:void(0)" onclick="goToApp()" style="color:var(--primary);text-decoration:none;font-weight:500">自己也试试 →</a>
+    </div>
+  </div>
+</div>
+
+<div class="container" id="mainApp">
   <header>
     <div class="header-icon">
       <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg>
@@ -1051,6 +1167,10 @@ footer a {
           <button class="action-btn" onclick="copyResult()">
             <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
             复制
+          </button>
+          <button class="action-btn" onclick="shareLink()" style="background:linear-gradient(135deg,rgba(16,185,129,0.1),rgba(5,150,105,0.1));color:#059669">
+            <svg viewBox="0 0 24 24" style="fill:#059669"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+            分享链接
           </button>
           <button class="action-btn" onclick="exportImage()">
             <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
@@ -1403,6 +1523,167 @@ function exportImage() {
   showToast('请使用系统截图功能保存');
 }
 
+// ============ 分享功能 ============
+
+// 将分组结果编码为 URL 参数
+function encodeShareData(groups, groupCount, hasSeed) {
+  const data = {
+    g: groups.map(g => g.map(m => (m.isSeed ? '★' : '') + m.name)),
+    n: groupCount,
+    s: hasSeed ? 1 : 0,
+    t: Date.now()
+  };
+  // 使用 base64 编码，兼容 URL
+  const json = JSON.stringify(data);
+  // 中文安全编码
+  return btoa(unescape(encodeURIComponent(json)));
+}
+
+// 从 URL 参数解码分组结果
+function decodeShareData(hash) {
+  try {
+    const json = decodeURIComponent(escape(atob(hash)));
+    const data = JSON.parse(json);
+    if (!data.g || !data.n) return null;
+    return {
+      groups: data.g.map(g => g.map(name => ({
+        name: name.startsWith('★') ? name.slice(1) : name,
+        isSeed: name.startsWith('★')
+      }))),
+      groupCount: data.n,
+      hasSeed: data.s === 1,
+      time: data.t || null
+    };
+  } catch (e) {
+    return null;
+  }
+}
+
+// 生成分享链接
+function shareLink() {
+  const cards = groupGrid.querySelectorAll('.group-card');
+  if (cards.length === 0) {
+    showToast('请先进行抽签');
+    return;
+  }
+
+  // 从当前页面收集分组数据
+  const groups = [];
+  cards.forEach(card => {
+    const members = card.querySelectorAll('.member');
+    const group = [];
+    members.forEach(m => {
+      const isSeed = m.classList.contains('is-seed');
+      const name = m.childNodes[1].textContent.trim();
+      group.push({ name, isSeed });
+    });
+    groups.push(group);
+  });
+
+  const hasSeed = groups.some(g => g.some(m => m.isSeed));
+  const encoded = encodeShareData(groups, groups.length, hasSeed);
+  const url = location.origin + location.pathname + '#share=' + encoded;
+
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('✅ 分享链接已复制，发给朋友即可查看');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = url;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ 分享链接已复制，发给朋友即可查看');
+  });
+}
+
+// 渲染分享结果页
+function renderShareView(data) {
+  const mainApp = document.getElementById('mainApp');
+  const shareView = document.getElementById('shareFullView');
+  const bgDeco = document.querySelector('.bg-decoration');
+
+  // 隐藏主应用，显示分享页
+  mainApp.style.display = 'none';
+  shareView.style.display = 'block';
+
+  // 元信息
+  const totalPeople = data.groups.reduce((s, g) => s + g.length, 0);
+  const metaEl = document.getElementById('shareMeta');
+  let metaHtml = '<span>👥 ' + totalPeople + ' 人</span><span>📦 ' + data.groupCount + ' 组</span>';
+  if (data.time) {
+    const d = new Date(data.time);
+    metaHtml += '<span>🕐 ' + d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + '</span>';
+  }
+  if (data.hasSeed) {
+    metaHtml += '<span>⭐ 含种子选手</span>';
+  }
+  metaEl.innerHTML = metaHtml;
+
+  // 渲染分组卡片
+  const grid = document.getElementById('shareGroupGrid');
+  grid.innerHTML = '';
+
+  data.groups.forEach((group, i) => {
+    const colorIdx = i % 10;
+    const card = document.createElement('div');
+    card.className = 'group-card';
+    card.style.animationDelay = (i * 0.08) + 's';
+
+    const header = document.createElement('div');
+    header.className = 'group-header';
+    header.style.background = 'var(--c' + colorIdx + ')';
+    header.innerHTML = '<span>第 ' + (i + 1) + ' 组</span><span class="group-badge">' + group.length + ' 人</span>';
+
+    const body = document.createElement('div');
+    body.className = 'group-body';
+
+    group.forEach((item, j) => {
+      const member = document.createElement('div');
+      member.className = 'member' + (item.isSeed ? ' is-seed' : '');
+
+      const num = document.createElement('span');
+      num.className = 'member-num';
+      num.style.background = item.isSeed ? '#F59E0B' : 'var(--c' + colorIdx + ')';
+      num.textContent = j + 1;
+
+      member.appendChild(num);
+      member.appendChild(document.createTextNode(item.name));
+
+      if (item.isSeed) {
+        const badge = document.createElement('span');
+        badge.className = 'seed-badge';
+        badge.title = '种子选手';
+        badge.textContent = '⭐';
+        member.appendChild(badge);
+      }
+
+      body.appendChild(member);
+    });
+
+    card.appendChild(header);
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+
+// 跳转到抽签工具主页
+function goToApp() {
+  location.hash = '';
+  location.reload();
+}
+
+// 页面加载时检查分享链接
+function checkShareLink() {
+  const hash = location.hash;
+  if (!hash.startsWith('#share=')) return false;
+  const encoded = hash.slice(7);
+  const data = decodeShareData(encoded);
+  if (!data) return false;
+  renderShareView(data);
+  return true;
+}
+
 function saveHistory(groups, groupCount) {
   const now = new Date();
   const timeStr = now.getFullYear() + '-' +
@@ -1470,10 +1751,12 @@ function resetAll() {
 }
 
 // 初始化
-updateCount();
-updateStats();
-updateSeedCount();
-renderHistory();
+if (!checkShareLink()) {
+  updateCount();
+  updateStats();
+  updateSeedCount();
+  renderHistory();
+}
 </script>
 </body>
 </html>

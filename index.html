@@ -721,6 +721,120 @@ footer a {
   to { opacity: 1; }
 }
 
+/* 种子选手 */
+.seed-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.seed-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  user-select: none;
+}
+
+.seed-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.seed-toggle-label svg {
+  width: 16px; height: 16px;
+  fill: #F59E0B;
+}
+
+/* 开关 */
+.switch {
+  position: relative;
+  width: 40px; height: 22px;
+  flex-shrink: 0;
+}
+
+.switch input { display: none; }
+
+.switch-track {
+  position: absolute;
+  inset: 0;
+  background: #D1D5DB;
+  border-radius: 11px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+.switch input:checked + .switch-track {
+  background: var(--primary);
+}
+
+.switch-track::after {
+  content: '';
+  position: absolute;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px; left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.switch input:checked + .switch-track::after {
+  transform: translateX(18px);
+}
+
+.seed-body {
+  margin-top: 12px;
+  display: none;
+}
+
+.seed-body.open {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.seed-input-area {
+  position: relative;
+}
+
+.seed-input-area textarea {
+  height: 100px;
+  border-color: #FDE68A;
+  background: #FFFBEB;
+}
+
+.seed-input-area textarea:focus {
+  border-color: #F59E0B;
+  box-shadow: 0 0 0 3px rgba(245,158,11,0.12);
+  background: #fff;
+}
+
+.seed-count {
+  font-size: 12px;
+  color: #F59E0B;
+  margin-top: 6px;
+  font-weight: 500;
+}
+
+/* 种子标记 */
+.member.is-seed {
+  background: linear-gradient(90deg, #FFFBEB 0%, transparent 100%);
+}
+
+.seed-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px; height: 18px;
+  font-size: 12px;
+  margin-left: 2px;
+  flex-shrink: 0;
+}
+
 /* 历史记录 */
 .history-list {
   display: flex;
@@ -886,6 +1000,27 @@ footer a {
       </div>
     </div>
 
+    <!-- 种子选手 -->
+    <div class="seed-section">
+      <div class="seed-toggle" onclick="toggleSeed()">
+        <div class="seed-toggle-label">
+          <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+          设置种子选手
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="seedSwitch">
+          <span class="switch-track"></span>
+        </label>
+      </div>
+      <div class="seed-body" id="seedBody">
+        <div class="seed-input-area" style="margin-top:4px">
+          <label for="seeds" style="color:#92400E;font-size:13px;margin-bottom:6px">种子名单（每行一个，确保分散到不同组）</label>
+          <textarea id="seeds" placeholder="每行输入一个种子选手，例如：&#10;张三&#10;李四&#10;&#10;种子数量不能超过分组数"></textarea>
+          <div class="seed-count" id="seedCount">已设置 0 位种子选手</div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="input-group" style="max-width:200px">
         <label for="groupCount">分组数量</label>
@@ -960,6 +1095,9 @@ const statGroups = document.getElementById('statGroups');
 const statAvg = document.getElementById('statAvg');
 const historyCard = document.getElementById('historyCard');
 const historyList = document.getElementById('historyList');
+const seedsInput = document.getElementById('seeds');
+const seedCountEl = document.getElementById('seedCount');
+const seedSwitch = document.getElementById('seedSwitch');
 
 let currentMode = 'names';
 let history = JSON.parse(localStorage.getItem('drawHistory') || '[]');
@@ -968,6 +1106,7 @@ namesInput.addEventListener('input', updateCount);
 groupCountInput.addEventListener('input', updateStats);
 numFromInput.addEventListener('input', updateStats);
 numToInput.addEventListener('input', updateStats);
+seedsInput.addEventListener('input', updateSeedCount);
 
 // 按钮涟漪效果
 document.querySelectorAll('button').forEach(btn => {
@@ -983,6 +1122,26 @@ document.querySelectorAll('button').forEach(btn => {
     setTimeout(() => ripple.remove(), 600);
   });
 });
+
+function toggleSeed() {
+  const body = document.getElementById('seedBody');
+  seedSwitch.checked = !seedSwitch.checked;
+  if (seedSwitch.checked) {
+    body.classList.add('open');
+  } else {
+    body.classList.remove('open');
+  }
+}
+
+function updateSeedCount() {
+  const seeds = getSeeds();
+  seedCountEl.textContent = '已设置 ' + seeds.length + ' 位种子选手';
+}
+
+function getSeeds() {
+  if (!seedSwitch.checked) return [];
+  return seedsInput.value.trim().split('\n').map(n => n.trim()).filter(n => n.length > 0);
+}
 
 function switchMode(mode) {
   currentMode = mode;
@@ -1077,6 +1236,7 @@ function drawLots() {
   }
 
   const groupCount = parseInt(groupCountInput.value);
+  const seeds = getSeeds();
 
   if (names.length === 0) {
     showError('请输入参与人员名单');
@@ -1091,25 +1251,67 @@ function drawLots() {
     return;
   }
 
+  // 种子校验
+  if (seeds.length > 0) {
+    // 检查种子是否在名单中
+    const namesSet = new Set(names);
+    const notFound = seeds.filter(s => !namesSet.has(s));
+    if (notFound.length > 0) {
+      showError('种子选手不在名单中：' + notFound.join('、'));
+      return;
+    }
+    // 种子不能重复
+    const seedSet = new Set(seeds);
+    if (seedSet.size !== seeds.length) {
+      showError('种子选手名单中有重复');
+      return;
+    }
+    if (seeds.length > groupCount) {
+      showError('种子数量（' + seeds.length + '）不能超过分组数（' + groupCount + '）');
+      return;
+    }
+  }
+
   // 显示抽签动画
   drawOverlay.classList.add('show');
 
   setTimeout(() => {
-    const shuffled = fisherYatesShuffle(names);
     const groups = Array.from({ length: groupCount }, () => []);
+    const seedSet = new Set(seeds);
 
-    shuffled.forEach((name, i) => {
-      groups[i % groupCount].push(name);
-    });
+    if (seeds.length > 0) {
+      // 打散种子顺序，随机分配到各组（每组最多1个）
+      const shuffledSeeds = fisherYatesShuffle(seeds);
+      shuffledSeeds.forEach((seed, i) => {
+        groups[i].push({ name: seed, isSeed: true });
+      });
 
-    renderResult(groups, groupCount);
+      // 剩余非种子成员随机分配
+      const rest = fisherYatesShuffle(names.filter(n => !seedSet.has(n)));
+      // 用最短队列优先填充，保证均匀
+      rest.forEach(name => {
+        const minLen = Math.min(...groups.map(g => g.length));
+        const candidates = groups.map((g, i) => ({ g, i })).filter(x => x.g.length === minLen);
+        const pick = candidates[Math.floor(Math.random() * candidates.length)];
+        pick.g.push({ name, isSeed: false });
+      });
+    } else {
+      // 无种子，普通随机
+      const shuffled = fisherYatesShuffle(names);
+      shuffled.forEach((name, i) => {
+        groups[i % groupCount].push({ name, isSeed: false });
+      });
+    }
+
+    renderResult(groups, groupCount, seeds.length > 0);
     redrawBtn.style.display = 'block';
     drawOverlay.classList.remove('show');
 
-    // 保存历史
-    saveHistory(groups, groupCount);
+    // 保存历史（兼容旧格式）
+    const plainGroups = groups.map(g => g.map(m => (m.isSeed ? '★' : '') + m.name));
+    saveHistory(plainGroups, groupCount);
 
-    showToast('分组完成！');
+    showToast(seeds.length > 0 ? '已确保种子分散，分组完成！' : '分组完成！');
   }, 1200);
 }
 
@@ -1117,9 +1319,9 @@ function redraw() {
   drawLots();
 }
 
-function renderResult(groups, groupCount) {
+function renderResult(groups, groupCount, hasSeed) {
   const totalPeople = groups.reduce((s, g) => s + g.length, 0);
-  resultTitle.innerHTML = '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> 分组结果 · ' + groupCount + ' 组 ' + totalPeople + ' 人';
+  resultTitle.innerHTML = '<svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:var(--primary)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg> 分组结果 · ' + groupCount + ' 组 ' + totalPeople + ' 人' + (hasSeed ? ' · <span style="color:#F59E0B;font-size:14px">⭐ 含种子</span>' : '');
 
   groupGrid.innerHTML = '';
 
@@ -1137,17 +1339,26 @@ function renderResult(groups, groupCount) {
     const body = document.createElement('div');
     body.className = 'group-body';
 
-    group.forEach((name, j) => {
+    group.forEach((item, j) => {
       const member = document.createElement('div');
-      member.className = 'member';
+      member.className = 'member' + (item.isSeed ? ' is-seed' : '');
 
       const num = document.createElement('span');
       num.className = 'member-num';
-      num.style.background = 'var(--c' + colorIdx + ')';
+      num.style.background = item.isSeed ? '#F59E0B' : 'var(--c' + colorIdx + ')';
       num.textContent = j + 1;
 
       member.appendChild(num);
-      member.appendChild(document.createTextNode(name));
+      member.appendChild(document.createTextNode(item.name));
+
+      if (item.isSeed) {
+        const badge = document.createElement('span');
+        badge.className = 'seed-badge';
+        badge.title = '种子选手';
+        badge.textContent = '⭐';
+        member.appendChild(badge);
+      }
+
       body.appendChild(member);
     });
 
@@ -1168,7 +1379,9 @@ function copyResult() {
     const members = card.querySelectorAll('.member');
     text += header + '\n';
     members.forEach(m => {
-      text += '  ' + m.textContent.trim() + '\n';
+      const isSeed = m.classList.contains('is-seed');
+      const name = m.childNodes[1].textContent.trim();
+      text += '  ' + (isSeed ? '⭐' : '  ') + name + '\n';
     });
     text += '\n';
   });
@@ -1176,7 +1389,6 @@ function copyResult() {
   navigator.clipboard.writeText(text).then(() => {
     showToast('已复制到剪贴板');
   }).catch(() => {
-    // fallback
     const ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);
@@ -1232,25 +1444,35 @@ function renderHistory() {
 function loadHistory(idx) {
   const record = history[idx];
   if (!record) return;
-  renderResult(record.groups, record.groupCount);
+  // 历史记录为字符串格式，转换回对象格式渲染
+  const groups = record.groups.map(g => g.map(name => ({
+    name: name.startsWith('★') ? name.slice(1) : name,
+    isSeed: name.startsWith('★')
+  })));
+  renderResult(groups, record.groupCount, groups.some(g => g.some(m => m.isSeed)));
   redrawBtn.style.display = 'block';
   showToast('已加载历史记录');
 }
 
 function resetAll() {
   namesInput.value = '';
+  seedsInput.value = '';
   numFromInput.value = 1;
   numToInput.value = 20;
   groupCountInput.value = 2;
   resultArea.classList.remove('show');
   redrawBtn.style.display = 'none';
+  seedSwitch.checked = false;
+  document.getElementById('seedBody').classList.remove('open');
   updateCount();
   updateStats();
+  updateSeedCount();
 }
 
 // 初始化
 updateCount();
 updateStats();
+updateSeedCount();
 renderHistory();
 </script>
 </body>
